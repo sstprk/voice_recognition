@@ -1,15 +1,8 @@
 from PyQt5.QtCore import QThread, pyqtSignal
 
-
-class GeriSayimThread(QThread):
-    update_label = pyqtSignal(str)  # Etiketi güncellemek için sinyal oluştur
-
-    def run(self):
-        for i in range(3, 0, -1):
-            self.update_label.emit(f"{i}")  # Her geri sayım adımında sinyal gönder
-            self.sleep(1)  # 1 saniye bekle
-        self.update_label.emit("Kayıt başladı!")  # Geri sayım tamamlandığında mesaj
-        self.parent().record_from_microphone()  # Kayıt başlat
+from SesleriAlma import *
+from MetinYerleri import *
+from GrafikIslemleri import *
 
 class BilgilendirmeThread(QThread):
     def __init__(self, parent, message, target):
@@ -18,5 +11,8 @@ class BilgilendirmeThread(QThread):
         self.target = target
 
     def run(self):
-        self.parent().BilgilendirmeKutusu.setText(self.message)
-        self.target()
+        try:
+            self.parent().BilgilendirmeKutusu.setText(self.message)
+            self.target()
+        except Exception as e:
+            print(f"BilgilendirmeThread içinde bir hata oluştu: {e}")

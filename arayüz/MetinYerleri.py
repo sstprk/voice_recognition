@@ -3,7 +3,6 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 from PyQt5.QtGui import QFont, QPalette, QColor
 
-
 class MetinYerleri(QWidget):
     def MetinYeri(self):
         self.labels = []

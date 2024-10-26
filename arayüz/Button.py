@@ -3,6 +3,8 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 import locale
 
+from Fonksiyon import *
+
 class ButonOlustur(QWidget):
     def GirisMenuButonlari(self):
         self.AnaMenuButonlari = []
@@ -10,8 +12,8 @@ class ButonOlustur(QWidget):
 
         # BUTONLAR OLUŞTURULUYOR
         buttons_info = [
-            {"bilgi": "MicrofonSesButton", "text": "MİKROFONDAN SES TANIMA", "position": (120, 20, 420, 40), "function": self.MikrofondanSesTanima},
-            {"bilgi": "DosyadanSesButton", "text": "SES DOSYASINDAN SES TANIMA", "position": (660, 20, 420, 40), "function": self.SesDosyasindanSesTanima}
+            {"bilgi": "MicrofonSesButton", "text": "MİKROFONDAN SES TANIMA", "position": (120, 20, 420, 40), "function": lambda: Fonksiyon.MikrofondanSesTanima(self)},
+            {"bilgi": "DosyadanSesButton", "text": "SES DOSYASINDAN SES TANIMA", "position": (660, 20, 420, 40), "function": lambda: Fonksiyon.SesDosyasindanSesTanima(self)}
         ]
 
         for button_info in buttons_info:
@@ -36,4 +38,3 @@ class ButonOlustur(QWidget):
 
             self.AnaMenuButonlari.append(button)
             setattr(self, bilgi, button)
-
