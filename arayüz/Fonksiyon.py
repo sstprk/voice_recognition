@@ -1,6 +1,7 @@
 from PyQt5.QtWidgets import QWidget, QFileDialog
 import sounddevice as sd
 from scipy.io.wavfile import write
+import speech_recognition as sr
 
 from GrafikIslemleri import *
 from Thread import *
@@ -29,3 +30,4 @@ class Fonksiyon(QWidget):
                 self.BilgilendirmeKutusu.setText("Ses dosyası seçilmedi.")
         except Exception as e:
             self.BilgilendirmeKutusu.setText(str(e))
+
