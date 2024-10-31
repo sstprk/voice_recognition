@@ -10,8 +10,8 @@ class MetinYerleri(QWidget):
         # UYARI-BİLGİLENDİRME MESAJ YERLERİ OLUŞTURULDU
         labels_info = [
             {"bilgi": "BilgilendirmeKutusu", "text": "Lütfen bir seçim yapınız.", "position": (0, 80, 1200, 40)},
-            {"bilgi": "KimKonusuyor", "text": "Konuşan Kişinin Adı:", "position": (0, 680, 1200, 40)},
-            {"bilgi": "DuyguDurumu", "text": "Konuşan Kişinin Duygu Durumu:", "position": (0, 740, 1200, 40)},
+            {"bilgi": "KimKonusuyor", "text": "", "position": (0, 680, 1200, 40)},
+            {"bilgi": "DuyguDurumu", "text": "", "position": (0, 740, 1200, 40)},
         ]
 
         for label_info in labels_info:

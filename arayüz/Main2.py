@@ -13,10 +13,9 @@ from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 
 from MetinYerleri import *
 from GrafikIslemleri import *
-from Thread import *
 from Button import *
-from Fonksiyon import *
 
+from Fonksiyon import *
 
 class SesTanima(QWidget):
     def __init__(self):
