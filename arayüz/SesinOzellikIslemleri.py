@@ -1,60 +1,69 @@
 import speech_recognition as Sr
-from pydub import AudioSegment
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 from googletrans import Translator
 
 from GrafikIslemleri import *
-from MetinYerleri import *
 
 class SesIslemleri(QWidget):
     def SestenMetinYapma(self, file_path):
         GrafikIslemleri.clear_graphs(self)
-
         recognizer = Sr.Recognizer()
 
         try:
             with Sr.AudioFile(file_path) as source:
                 audio = recognizer.record(source)
 
+            # Spectrogram ve dalga formu çizimi için sesi yükle
             y, sr = librosa.load(file_path)
             GrafikIslemleri.plot_spectrogram_waveform(self, y, sr)
 
-            metin = recognizer.recognize_google(audio, language='tr-TR')  # Türkçe için 'tr-TR' kullanılıyor
+            # Sesi metne dönüştürme
+            metin = recognizer.recognize_google(audio, language='tr-TR')
 
-            # Metin tanımlandıktan sonra hemen dosyaya yazılıyor
+            # Metni bir dosyaya kaydetme
             with open("output.txt", "w", encoding="utf-8") as dosya:
                 dosya.write(metin)
 
             self.BilgilendirmeKutusu.setText("Metin başarıyla kaydedildi. Grafikler Çiziliyor...")
+
         except Sr.UnknownValueError:
-            self.BilgilendirmeKutusu.setText("Ses tanınamadı.")
+            # Dosya boş bırakılıyor
+            with open("output.txt", "w", encoding="utf-8") as dosya:
+                pass
+
         except Sr.RequestError as e:
             self.BilgilendirmeKutusu.setText(f"Google API'den yanıt alınamadı; {e}")
+
         except Exception as e:
-            self.BilgilendirmeKutusu.setText(f"Bir hata oluştu: {e}")
+            print(e)
 
     def DuyguDurumu(self):
         try:
+            # Metin dosyasını oku
             with open("output.txt", "r", encoding="utf-8") as dosya:
-                metin = dosya.read()
+                metin = dosya.read().strip()
+
+            if not metin:
+                self.DuyguDurumu.setText("Konuşan Kişinin Duygu Durumu: NÖTR")
+                return
 
             # Çeviri işlemi
             translator = Translator()
             ceviri = translator.translate(metin, src='tr', dest='en')
-
-            # Çevrilen metni al
             ceviri_metni = ceviri.text
 
-            # Duygu analizi yap
+            # Duygu analizi
             analyzer = SentimentIntensityAnalyzer()
             duygu = analyzer.polarity_scores(ceviri_metni)
 
-            # Duygu durumu kontrolü
-            if duygu['compound'] >= 0.05:
-                self.DuyguDurumu.setText("Konuşan Kişinin Duygu Durumu: Olumlu")
+            self.DuyguDurumu.setText(f"Mutlu: %{duygu['compound'] * 100:.2f}   Mutsuz: %{(1 - duygu['compound']) * 100:.2f}")
+
+            """if duygu['compound'] >= 0.05:
+                self.DuyguDurumu.setText("Konuşan Kişinin Duygu Durumu: MUTLU")
             elif duygu['compound'] <= -0.05:
-                self.DuyguDurumu.setText("Konuşan Kişinin Duygu Durumu: Olumsuz")
+                self.DuyguDurumu.setText("Konuşan Kişinin Duygu Durumu: MUTSUZ")
             else:
-                self.DuyguDurumu.setText("Konuşan Kişinin Duygu Durumu: Nötr")
+                self.DuyguDurumu.setText("Konuşan Kişinin Duygu Durumu: NÖTR")"""
+
         except Exception as e:
             print(e)

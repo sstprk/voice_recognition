@@ -1,20 +1,10 @@
-import os
 import sys
-import random
-from PyQt5.QtWidgets import *
-from PyQt5.QtCore import Qt, QThread, pyqtSignal
-import librosa
-import librosa.display
-import matplotlib.pyplot as plt
-import numpy as np
-import sounddevice as sd
-import speech_recognition as sr
-from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+from PyQt5.QtWidgets import QApplication, QWidget
+from PyQt5.QtCore import Qt
 
 from MetinYerleri import *
 from GrafikIslemleri import *
 from Button import *
-
 from Fonksiyon import *
 
 class SesTanima(QWidget):
@@ -28,7 +18,6 @@ class SesTanima(QWidget):
         MetinYerleri.MetinYeri(self)
         GrafikIslemleri.GrafikOlustur(self)
         ButonOlustur.GirisMenuButonlari(self)
-
 
 if __name__ == '__main__':
     try:
