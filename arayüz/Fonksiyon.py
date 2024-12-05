@@ -25,10 +25,18 @@ class Fonksiyon(QWidget):
             QApplication.processEvents()
 
             SesIslemleri.SestenMetinYapma(self, wav_file_path)
-            SesIslemleri.DuyguDurumu(self)
-            self.setEnabled(True)
 
-            self.BilgilendirmeKutusu.setText("Mikrofondan ses tanıma tamamlandı.")
+            with open("output.txt", "r", encoding="utf-8") as dosya:
+                metin = dosya.read().strip()
+
+            if len(metin) == 0:
+                self.BilgilendirmeKutusu.setText("Mikrofon ses alamadı.")
+                self.setEnabled(True)
+            else:
+                SesIslemleri.SesGrafikCiz(self)
+                SesIslemleri.DuyguDurumu(self)
+                self.BilgilendirmeKutusu.setText("Mikrofondan ses tanıma tamamlandı.")
+                self.setEnabled(True)
         except Exception as e:
             print(e)
 
@@ -49,10 +57,10 @@ class Fonksiyon(QWidget):
             if file_path:
                 SesIslemleri.SestenMetinYapma(self, file_path)
                 SesIslemleri.DuyguDurumu(self)
-
-                self.setEnabled(True)
                 self.BilgilendirmeKutusu.setText("Ses dosyasından ses tanıma tamamlandı.")
+                self.setEnabled(True)
             else:
                 self.BilgilendirmeKutusu.setText("Ses dosyası seçilmedi.")
+                self.setEnabled(True)
         except Exception as e:
             self.BilgilendirmeKutusu.setText(str(e))

@@ -6,33 +6,29 @@ from GrafikIslemleri import *
 
 class SesIslemleri(QWidget):
     def SestenMetinYapma(self, file_path):
-        GrafikIslemleri.clear_graphs(self)
         recognizer = Sr.Recognizer()
-
         try:
             with Sr.AudioFile(file_path) as source:
                 audio = recognizer.record(source)
 
-            # Spectrogram ve dalga formu çizimi için sesi yükle
-            y, sr = librosa.load(file_path)
-            GrafikIslemleri.plot_spectrogram_waveform(self, y, sr)
-
-            # Sesi metne dönüştürme
             metin = recognizer.recognize_google(audio, language='tr-TR')
-
-            # Metni bir dosyaya kaydetme
             with open("output.txt", "w", encoding="utf-8") as dosya:
                 dosya.write(metin)
 
-            self.BilgilendirmeKutusu.setText("Metin başarıyla kaydedildi. Grafikler Çiziliyor...")
-
         except Sr.UnknownValueError:
-            # Dosya boş bırakılıyor
             with open("output.txt", "w", encoding="utf-8") as dosya:
                 pass
-
         except Sr.RequestError as e:
             self.BilgilendirmeKutusu.setText(f"Google API'den yanıt alınamadı; {e}")
+        except Exception as e:
+            print(e)
+
+    def SesGrafikCiz(self, file_path):
+        GrafikIslemleri.clear_graphs(self)
+        try:
+            # Ses dosyasını yükleyerek grafik çizimi
+            y, sr = librosa.load(file_path)
+            GrafikIslemleri.plot_spectrogram_waveform(self, y, sr)
 
         except Exception as e:
             print(e)
