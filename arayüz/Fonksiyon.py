@@ -14,17 +14,17 @@ class Fonksiyon(QWidget):
 
             samplerate = 44100
             duration = 5
-            wav_file_path = 'kayit.wav'
+            file_path = 'kayit.wav'
 
             recorded_audio = sd.rec(int(samplerate * duration), samplerate=samplerate, channels=1, dtype='float32')
             sd.wait()
 
-            write(wav_file_path, samplerate, (recorded_audio * 32767).astype(np.int16))
+            write(file_path, samplerate, (recorded_audio * 32767).astype(np.int16))
 
             self.BilgilendirmeKutusu.setText("Lütfen Bekleyiniz, Analiz Ediliyor...")
             QApplication.processEvents()
 
-            SesIslemleri.SestenMetinYapma(self, wav_file_path)
+            SesIslemleri.SestenMetinYapma(self, file_path)
 
             with open("output.txt", "r", encoding="utf-8") as dosya:
                 metin = dosya.read().strip()
@@ -33,7 +33,7 @@ class Fonksiyon(QWidget):
                 self.BilgilendirmeKutusu.setText("Mikrofon ses alamadı.")
                 self.setEnabled(True)
             else:
-                SesIslemleri.SesGrafikCiz(self)
+                SesIslemleri.SesGrafikCiz(self, file_path)
                 SesIslemleri.DuyguDurumu(self)
                 self.BilgilendirmeKutusu.setText("Mikrofondan ses tanıma tamamlandı.")
                 self.setEnabled(True)
@@ -56,9 +56,17 @@ class Fonksiyon(QWidget):
 
             if file_path:
                 SesIslemleri.SestenMetinYapma(self, file_path)
-                SesIslemleri.DuyguDurumu(self)
-                self.BilgilendirmeKutusu.setText("Ses dosyasından ses tanıma tamamlandı.")
-                self.setEnabled(True)
+                with open("output.txt", "r", encoding="utf-8") as dosya:
+                    metin = dosya.read().strip()
+
+                if len(metin) == 0:
+                    self.BilgilendirmeKutusu.setText("Ses Dosyasının İçeriği Boştur.")
+                    self.setEnabled(True)
+                else:
+                    SesIslemleri.SesGrafikCiz(self, file_path)
+                    SesIslemleri.DuyguDurumu(self)
+                    self.BilgilendirmeKutusu.setText("Ses dosyasından ses tanıma tamamlandı.")
+                    self.setEnabled(True)
             else:
                 self.BilgilendirmeKutusu.setText("Ses dosyası seçilmedi.")
                 self.setEnabled(True)
