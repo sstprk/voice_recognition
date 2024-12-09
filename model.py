@@ -16,7 +16,7 @@ from keras._tf_keras.keras.regularizers import l1_l2
 from keras._tf_keras.keras import Input, layers
 from keras._tf_keras.keras.preprocessing.text import Tokenizer
 from keras._tf_keras.keras.losses import MSE
-from keras._tf_keras.keras.models import Sequential, load_model
+from keras._tf_keras.keras.models import Sequential
 from keras._tf_keras.keras.layers import (
     SimpleRNN, Dense, Embedding, Masking, LSTM, 
     GRU, Conv1D, Dropout, BatchNormalization, 
@@ -62,20 +62,20 @@ class VoiceRecogntion():
         
         self.model.add(Dense(512, activation='relu'))
         self.model.add(BatchNormalization())
-        self.model.add(Dropout(0.2))
+        #self.model.add(Dropout(0.2))
         
         self.model.add(Dense(256, activation='relu'))
         self.model.add(BatchNormalization())
-        self.model.add(Dropout(0.1))
+        #self.model.add(Dropout(0.2))
         
         # Output layer with softmax activation
         self.model.add(Dense(self.y_train.shape[1], activation='softmax'))
 
         # Compile model with optimizer and loss function
         self.model.compile(
-            loss="mse",
+            loss="categorical_crossentropy",
             optimizer=Adam(learning_rate=0.001, clipnorm=1.0),
-            metrics=['accuracy']
+            metrics=['accuracy'],
         )
 
     def fit_data(self):
@@ -84,16 +84,21 @@ class VoiceRecogntion():
             # Reduce learning rate when validation loss plateaus
             ReduceLROnPlateau(monitor='val_loss', factor=0.1, patience=5, min_lr=1e-6),
             # Stop training when validation loss stops improving
-            EarlyStopping(monitor='val_loss', patience=10, restore_best_weights=True)
+            EarlyStopping(monitor='val_loss', patience=10, restore_best_weights=False)
         ]
         # Train the model
         self.history = self.model.fit(self.x_train, self.y_train,
-                               epochs=30,
+                               epochs=100,
                                batch_size=32,
                                verbose=1,
                                callbacks=callbacks,
                                validation_split=0.2,
                                shuffle=True)
+        
+        # Save model
+        self.model.save("/Users/sstprk/Desktop/School/CBU/Yazılım Sınama/Proje/Models/model.keras")
+        self.model.save_weights("/Users/sstprk/Desktop/School/CBU/Yazılım Sınama/Proje/Models/model.weights.h5")
+
     
     def prediction(self, x_test, y_test):
         # Make predictions on test data
@@ -103,8 +108,9 @@ class VoiceRecogntion():
 
         # Calculate confusion matrix
         cm = confusion_matrix(actual_classes, predictions)
+        report = classification_report(actual_classes, predictions)
 
-        return cm, predictions, actual_classes
+        return cm, report
     
     def get_score(self, x_test, y_test):
         # Evaluate model performance
@@ -120,6 +126,3 @@ class VoiceRecogntion():
         self.x_train = new_x 
         self.y_train = new_y
 
-    def load_model(self):
-        # Load saved model from disk
-        joblib.load("/Users/sstprk/Desktop/School/CBU/Yazılım Sınama/Proje/Models/model.pkl")

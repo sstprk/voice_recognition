@@ -5,12 +5,14 @@ import matplotlib.pyplot as plt
 import seaborn as sb
 
 # Import machine learning related libraries
-from sklearn.preprocessing import MinMaxScaler, OneHotEncoder
+from sklearn.preprocessing import OneHotEncoder
 from sklearn.ensemble import RandomForestClassifier
-from keras._tf_keras.keras.preprocessing.sequence import TimeseriesGenerator
+from sklearn.metrics import classification_report, confusion_matrix
+
 from model import VoiceRecogntion
 from audio_processing import AudioProcessor
 import tensorflow as tf
+from keras._tf_keras.keras.saving import load_model
 
 def get_data(path, filenames):
     """
@@ -93,11 +95,11 @@ if __name__ == "__main__":
     dataset_shuffled = data.sample(frac=1).reset_index(drop=True)
 
     # Split data into training and test sets
-    train_x, test_x, train_y, test_y = prep_data(data, test_percent=0.2)
+    train_x, test_x, train_y, test_y = prep_data(dataset_shuffled, test_percent=0.2)
 
     # Perform feature selection
     importances = feature_selection(train_x, train_y)
-    unwanted_features = importances[28:len(importances)]
+    unwanted_features = importances[128:len(importances)]
 
     # Remove less important features
     train_x = np.array(train_x.drop(labels=[x for x in unwanted_features.index], axis=1))
@@ -112,11 +114,9 @@ if __name__ == "__main__":
     n_features = train_x.shape[1]
     length = train_x.shape[0]
 
-    # Initialize and load the model
+    """# Initialize and load the model
     Model = VoiceRecogntion(length=length, n_features=n_features, x_train=train_x, y_train=train_y)
     Model.fit_data()
-    #Model.load_model()
-
     Model.get_score(test_x, test_y)
 
     # Define test dataset
@@ -138,11 +138,63 @@ if __name__ == "__main__":
     test_dataset_x = test_dataset_x.drop(labels=[x for x in unwanted_features.index], axis=1) 
 
     # Make predictions and get confusion matrix
-    confusion_matrix, predictions, actual = Model.prediction(tf.convert_to_tensor(test_dataset_x), tf.convert_to_tensor(test_dataset_y))
+    confusion_matrix, classifc_report = Model.prediction(tf.convert_to_tensor(test_dataset_x), tf.convert_to_tensor(test_dataset_y))
+
+    # Print classification report
+    print(classifc_report)
 
     # Plot confusion matrix
     plt.figure(figsize=(10, 7))
     sb.heatmap(confusion_matrix, annot=True, fmt='d', cmap='Blues')
+    plt.title('Confusion Matrix')
+    plt.xlabel('Predicted')
+    plt.ylabel('Actual')
+    plt.show()"""
+
+    #Load model
+
+    model_loaded = load_model("/Users/sstprk/Desktop/School/CBU/Yazılım Sınama/Proje/Models/model.keras")
+    model_loaded.load_weights("/Users/sstprk/Desktop/School/CBU/Yazılım Sınama/Proje/Models/model.weights.h5")
+
+    model_loaded.summary()
+    model_loaded.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
+
+    model_loaded.evaluate(test_x, test_y)
+
+    # Define test dataset
+    test_filenames = [
+        "Sezen Aksu - Yalnızca Sitem",
+        "Sertab Erener - Yolun Başı",
+        "Yıldız Tilbe - Aşkın Benden De Öte"
+    ]
+
+    # Process test data
+    test_path = '/Users/sstprk/Desktop/School/CBU/Yazılım Sınama/Proje/Sounds/Turkish Songs/Predict/'
+    test_data = get_data(test_path, test_filenames)
+
+    test_dataset_shuffled = test_data.sample(frac=1).reset_index(drop=True)
+
+    # Prepare final test data
+    test_dataset_y = encoder.transform(pd.DataFrame(test_dataset_shuffled.loc[:, "singer"], columns=["singer"]))
+    test_dataset_x = test_dataset_shuffled.drop(labels=["singer"], axis=1)
+    test_dataset_x = test_dataset_x.drop(labels=[x for x in unwanted_features.index], axis=1) 
+
+    # Make predictions and get confusion matrix
+    y_pred = model_loaded.predict(tf.convert_to_tensor(test_dataset_x))
+
+    predictions = np.argmax(y_pred, axis=1)
+    actual_classes = np.argmax(tf.convert_to_tensor(test_dataset_y), axis=1)
+
+    # Calculate confusion matrix
+    cm = confusion_matrix(actual_classes, predictions)
+    report = classification_report(actual_classes, predictions)
+
+    # Print classification report
+    print(report)
+
+    # Plot confusion matrix
+    plt.figure(figsize=(10, 7))
+    sb.heatmap(cm, annot=True, fmt='d', cmap='Blues')
     plt.title('Confusion Matrix')
     plt.xlabel('Predicted')
     plt.ylabel('Actual')
