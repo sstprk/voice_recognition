@@ -1,6 +1,11 @@
 import speech_recognition as Sr
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 from googletrans import Translator
+import pandas as pd
+import numpy as np
+from pydub import AudioSegment
+import librosa
+import os
 
 from GrafikIslemleri import *
 
@@ -54,12 +59,25 @@ class SesIslemleri(QWidget):
 
             self.DuyguDurumu.setText(f"Mutlu: %{duygu['compound'] * 100:.2f}   Mutsuz: %{(1 - duygu['compound']) * 100:.2f}")
 
-            """if duygu['compound'] >= 0.05:
-                self.DuyguDurumu.setText("Konuşan Kişinin Duygu Durumu: MUTLU")
-            elif duygu['compound'] <= -0.05:
-                self.DuyguDurumu.setText("Konuşan Kişinin Duygu Durumu: MUTSUZ")
-            else:
-                self.DuyguDurumu.setText("Konuşan Kişinin Duygu Durumu: NÖTR")"""
-
         except Exception as e:
             print(e)
+
+    def get_data(self, filename):
+        frame_length = 25
+        frame_stride = 10
+        data, samrates = librosa.load((filename), sr=None)
+        data = librosa.util.normalize(data)
+        data = librosa.effects.trim(data, top_db=10)
+        mfccs = librosa.feature.mfcc(y=data[0], sr=samrates, n_mfcc=128,
+                                     hop_length=int(frame_stride * samrates / 1000),
+                                     n_fft=int(frame_length * samrates / 1000))
+
+        mfccs = pd.DataFrame(mfccs.T, columns=[f"mfcc_{i}" for i in range(1, 129)])
+        np.save("SesTanimaCiktisi", mfccs)
+
+    def load_data(self):
+        data = np.load("SesTanimaCiktisi.npy")
+        data = np.mean(data, axis=0).reshape(1, -1)
+        data_df = pd.DataFrame(data, columns=[f"mfcc_{i}" for i in range(1, data.shape[1] + 1)])
+        label = os.path.basename("asd.npy").split(" -")[0]
+        data_df['singer'] = label

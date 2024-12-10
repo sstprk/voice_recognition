@@ -12,6 +12,7 @@ class MetinYerleri(QWidget):
             {"bilgi": "BilgilendirmeKutusu", "text": "Lütfen bir seçim yapınız.", "position": (0, 80, 1200, 40)},
             {"bilgi": "KimKonusuyor", "text": "", "position": (0, 680, 1200, 40)},
             {"bilgi": "DuyguDurumu", "text": "", "position": (0, 740, 1200, 40)},
+            {"bilgi": "KacKelimeVar", "text": "", "position": (0, 800, 1200, 40)},
         ]
 
         for label_info in labels_info:

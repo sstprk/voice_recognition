@@ -13,7 +13,7 @@ class SesTanima(QWidget):
 
         self.setWindowTitle("SES TANIMA, SESTEN DUYGU ANALİZİ, KONUŞULAN KONU TAHMİNLEME UYGULAMASI")
         self.setStyleSheet("background-color: #C0E0E0")
-        self.setFixedSize(1200, 800)
+        self.setFixedSize(1200, 880)
 
         MetinYerleri.MetinYeri(self)
         GrafikIslemleri.GrafikOlustur(self)
