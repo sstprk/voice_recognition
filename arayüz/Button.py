@@ -12,8 +12,8 @@ class ButonOlustur(QWidget):
 
         # BUTONLAR OLUŞTURULUYOR
         buttons_info = [
-            {"bilgi": "MikrofonSesButton", "text": "MİKROFONDAN SES TANIMA", "position": (120, 20, 420, 40), "function": lambda: Fonksiyon.SesleriAlma(self)},
-            {"bilgi": "DosyadanSesButton", "text": "SES DOSYASINDAN SES TANIMA", "position": (660, 20, 420, 40), "function": lambda: Fonksiyon.SesleriAlma(self)}
+            {"bilgi": "MikrofonSesButton", "text": "MİKROFONDAN SES TANIMA", "position": (120, 20, 420, 40), "function": lambda: Fonksiyon.AnaIslemler(self)},
+            {"bilgi": "DosyadanSesButton", "text": "SES DOSYASINDAN SES TANIMA", "position": (660, 20, 420, 40), "function": lambda: Fonksiyon.AnaIslemler(self)}
         ]
 
         for button_info in buttons_info:
