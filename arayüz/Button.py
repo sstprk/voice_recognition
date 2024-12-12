@@ -12,8 +12,8 @@ class ButonOlustur(QWidget):
 
         # BUTONLAR OLUŞTURULUYOR
         buttons_info = [
-            {"bilgi": "MicrofonSesButton", "text": "MİKROFONDAN SES TANIMA", "position": (120, 20, 420, 40), "function": lambda: Fonksiyon.MikrofondanSesTanima(self)},
-            {"bilgi": "DosyadanSesButton", "text": "SES DOSYASINDAN SES TANIMA", "position": (660, 20, 420, 40), "function": lambda: Fonksiyon.SesDosyasindanSesTanima(self)}
+            {"bilgi": "MikrofonSesButton", "text": "MİKROFONDAN SES TANIMA", "position": (120, 20, 420, 40), "function": lambda: Fonksiyon.SesleriAlma(self)},
+            {"bilgi": "DosyadanSesButton", "text": "SES DOSYASINDAN SES TANIMA", "position": (660, 20, 420, 40), "function": lambda: Fonksiyon.SesleriAlma(self)}
         ]
 
         for button_info in buttons_info:
@@ -21,6 +21,8 @@ class ButonOlustur(QWidget):
             button = QPushButton(button_info["text"], self)
             button.setGeometry(*button_info["position"])
             button.clicked.connect(button_info["function"])
+
+            button.setObjectName(bilgi)
 
             #CSS EKLENDİ
             button.setStyleSheet("""

@@ -6,6 +6,8 @@ from MetinYerleri import *
 from GrafikIslemleri import *
 from Button import *
 from Fonksiyon import *
+from SesIslemleri import *
+from SesTanima import *
 
 class SesTanima(QWidget):
     def __init__(self):
