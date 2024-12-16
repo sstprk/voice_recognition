@@ -3,7 +3,7 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 import locale
 
-from Fonksiyon import *
+from Thread import *
 
 class ButonOlustur(QWidget):
     def GirisMenuButonlari(self):
@@ -12,8 +12,8 @@ class ButonOlustur(QWidget):
 
         # BUTONLAR OLUŞTURULUYOR
         buttons_info = [
-            {"bilgi": "MikrofonSesButton", "text": "MİKROFONDAN SES TANIMA", "position": (120, 20, 420, 40), "function": lambda: Fonksiyon.AnaIslemler(self)},
-            {"bilgi": "DosyadanSesButton", "text": "SES DOSYASINDAN SES TANIMA", "position": (660, 20, 420, 40), "function": lambda: Fonksiyon.AnaIslemler(self)}
+            {"bilgi": "MikrofonSesButton", "text": "MİKROFONDAN SES TANIMA", "position": (120, 20, 420, 40), "function": lambda: Thread.Thread(self)},
+            {"bilgi": "DosyadanSesButton", "text": "SES DOSYASINDAN SES TANIMA", "position": (660, 20, 420, 40), "function": lambda: Thread.Thread(self)}
         ]
 
         for button_info in buttons_info:

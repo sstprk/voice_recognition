@@ -56,7 +56,7 @@ class GrafikIslemleri(QWidget):
             self.canvas1.draw()
             self.canvas2.draw()
         except Exception as e:
-            print(e)
+            self.BilgilendirmeKutusu.setText(e)
 
     def clear_graphs(self):
         try:

@@ -26,6 +26,10 @@ class Fonksiyon(QWidget):
 
             file_path = Fonksiyon.SesleriAlma(self, button_name)
 
+            if file_path == 404:
+                self.BilgilendirmeKutusu.setText("Dosya alınamadı.")
+                return
+
             self.BilgilendirmeKutusu.setText("Lütfen Bekleyiniz, Analiz Ediliyor...")
             QApplication.processEvents()
 
@@ -33,27 +37,21 @@ class Fonksiyon(QWidget):
 
             Fonksiyon.SesleriAnalizEtme(self, button_name, file_path)
         except Exception as e:
-            print(e)
+            self.BilgilendirmeKutusu.setText(e)
 
     def SesleriAlma(self, button_name):
         try:
             if button_name == "DosyadanSesButton":
                 self.BilgilendirmeKutusu.setText("Lütfen Bekleyiniz, Ses Dosyası Alınıyor...")
                 QApplication.processEvents()
-                self.setEnabled(False)
 
                 options = QFileDialog.Options()
                 file_path, _ = QFileDialog.getOpenFileName(self, "Ses Dosyası Seç", "", "Ses Dosyaları (*.wav *.mp3)",
                                                            options=options)
 
-                """directory = os.path.dirname(file_path)
-                file_name = os.path.basename(file_path)
-                file_path = os.path.join(directory, file_name)"""
-
             elif button_name == "MikrofonSesButton":
                 self.BilgilendirmeKutusu.setText("Ses Kaydediliyor. Lütfen Bekleyiniz...")
                 QApplication.processEvents()
-                self.setEnabled(False)
 
                 samplerate = 44100
                 duration = 5
@@ -63,9 +61,13 @@ class Fonksiyon(QWidget):
                 sd.wait()
 
                 write(file_path, samplerate, (recorded_audio * 32767).astype(np.int16))
-            return file_path
+
+            if file_path:
+                return file_path
+            else:
+                return 404
         except Exception as e:
-            print(e)
+            self.BilgilendirmeKutusu.setText(e)
 
     def SesleriAnalizEtme(self, button_name, file_path):
         try:
@@ -76,9 +78,7 @@ class Fonksiyon(QWidget):
                 if button_name == "DosyadanSesButton":
                     self.BilgilendirmeKutusu.setText("Ses Dosyasının İçeriği Boştur.")
                 elif button_name == "MikrofonSesButton":
-                    self.BilgilendirmeKutusu.setText("Mikrofon ses alamadı.")
-
-                self.setEnabled(True)
+                    self.BilgilendirmeKutusu.setText("Konuşma bulunmamaktadır.")
             else:
                 SesTanima.SarkiSoyleyenBulma(self, file_path)
                 SesIslemleri.SesGrafikCiz(self, file_path)
@@ -89,14 +89,5 @@ class Fonksiyon(QWidget):
                     self.BilgilendirmeKutusu.setText("Ses dosyasından ses tanıma tamamlandı.")
                 elif button_name == "MikrofonSesButton":
                     self.BilgilendirmeKutusu.setText("Mikrofondan ses tanıma tamamlandı.")
-
-                text, topics = Fonksiyon.analyze_audio_topic(file_path)
-
-                print("Metin:\n", text)
-                print("\nKonular:")
-                for topic in topics:
-                    print(topic)
-
-                self.setEnabled(True)
         except Exception as e:
-            print(e)
+            self.BilgilendirmeKutusu.setText(e)

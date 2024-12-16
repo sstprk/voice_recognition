@@ -8,6 +8,7 @@ from Button import *
 from Fonksiyon import *
 from SesIslemleri import *
 from SesTanima import *
+from Thread import *
 
 class SesTanima(QWidget):
     def __init__(self):
@@ -28,4 +29,4 @@ if __name__ == '__main__':
         SesTanimaSayfasi.show()
         sys.exit(app.exec_())
     except Exception as e:
-        print(f"Uygulama başlatma hatası: {str(e)}")
+        self.BilgilendirmeKutusu.setText(e)
